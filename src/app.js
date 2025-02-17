@@ -1,5 +1,6 @@
 import express from 'express'
 import userRouter from './routes/user.routes.js'
+import cookieparser from 'cookie-parser'
 
 const app = express()
 
@@ -15,6 +16,8 @@ app.use(express.urlencoded(
         extended: true
     }
 ))
+
+app.use(cookieparser())
 
 app.use(express.static("public"))
 

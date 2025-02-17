@@ -23,6 +23,10 @@ const UserSchema = Schema({
     admin: {
         type: Boolean,
         default: false
+    },
+    refreshToken: {
+        type: String,
+        default: null,
     }
 }, {timestamps: true})
 
@@ -34,20 +38,46 @@ UserSchema.pre("save", async function (next){
     next()
 })
 
-UserSchema.methods.isPasswordCorrect = async (password) => {
+UserSchema.methods.isPasswordCorrect = async function(password){
     return await bcrypt.compare(password, this.password)
 }
 
 
-UserSchema.methods.generateJWT = async function() {
+// UserSchema.methods.generateJWT = async function() {
+//     return jwt.sign(
+//         {
+//             _id: this._id
+//         },
+//         process.env.JWTKEY,
+//         {
+//             expiresIn: "30d"
+//         },
+//     )
+// }
+
+UserSchema.methods.genereateAccessToken = async function() {
     return jwt.sign(
         {
-            _id: this._id
+            _id: this.id,
         },
-        process.env.JWTKEY,
+        process.env.ACCESS_TOKEN_KEY,
         {
-            expiresIn: "30d"
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        }
+    )
+}
+
+UserSchema.methods.genereateRefeshToken = async function() {
+    return jwt.sign(
+        {
+            _id: this.id,
+            name: this.name,
+            email: this.email,
         },
+        process.env.REFRESH_TOKEN_KEY,
+        {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        }
     )
 }
 
