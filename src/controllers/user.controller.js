@@ -2,6 +2,7 @@ import { User } from "../models/user.model.js";
 import apiError from "../utils/apiError.js";
 import apiResponse from "../utils/apiResponse.js";
 import { asyncHandeler } from "../utils/asyncHandeler.js";
+import { deleteFromCloudinary, uploadToCloudinary } from "../utils/cloudinary.js";
 
 
 
@@ -131,4 +132,56 @@ const getProfile = asyncHandeler( async (req, res, next) => {
 })
 
 
-export {registerUser, loginUser, logoutUser, getProfile};
+const updateProfile = asyncHandeler ( async (req, res, next) => {
+
+  const user = req.user
+  if(!user) {
+    throw new apiError(501, "unauthorized request")
+  }
+
+  
+
+  const {name, password} = req.body
+  const filePath = req?.file?.path
+
+
+  const oldAvatarPath = user.avatar || null
+  let url = ""
+
+  if(filePath) {
+    url = await uploadToCloudinary(filePath)
+    if(url !== "") await deleteFromCloudinary(oldAvatarPath);
+  }
+
+  if(!password) {
+    throw new apiError(400, "password required")
+  }
+
+  const updatedUser = await User.findOneAndUpdate(
+    user._id,
+    {
+      $set: {
+        name: name || user.name,
+        avatar: (url !== "") ? url : oldAvatarPath,
+        password: password,
+      }
+    },
+    {
+      validateBeforSave: true,
+      new: true,
+    }
+  ).select("-password -refreshToken")
+
+  if(!updatedUser) throw new apiError(500, "unable to update");
+
+  res.status(200)
+  .json(new apiResponse(
+    200,
+    updatedUser,
+    "updated successfuly"
+  ))
+
+})
+
+
+export {registerUser, loginUser, logoutUser, getProfile, updateProfile};
