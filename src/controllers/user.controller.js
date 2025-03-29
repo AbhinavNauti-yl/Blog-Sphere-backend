@@ -28,10 +28,10 @@ const registerUser = asyncHandeler( async (req, res, next) => {
       throw new apiError(400, "could not create user in database")
     }
 
-    res.send({
-        name: createdUser.name,
-        email: createdUser.email,
-    });
+    res.status(200).json(new apiResponse(
+      200,
+      createdUser,
+    ));
 });
 
 const generateAccessAndRefreshToken = async (userId) => {
