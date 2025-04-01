@@ -5,12 +5,7 @@ import cors from 'cors'
 
 const app = express()
 
-app.use(express.json(
-    {
-        limit:'16kb',
-        extended: true
-    }
-))
+app.use(express.json())
 
 app.use(express.urlencoded(
     {

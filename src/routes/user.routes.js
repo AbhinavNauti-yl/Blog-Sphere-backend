@@ -6,7 +6,7 @@ import {upload} from '../middleware/multer.middleware.js'
 const userRouter = Router()
 
 userRouter.route("/register").post(registerUser)
-userRouter.route("/login").get(loginUser)
+userRouter.route("/login").post(loginUser)
 userRouter.route("/logout").get(varifyJwt, logoutUser)
 userRouter.route("/profile").get(varifyJwt, getProfile)
 userRouter.route("/updateProfile").post(

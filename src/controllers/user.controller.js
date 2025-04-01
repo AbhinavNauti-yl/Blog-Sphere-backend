@@ -79,14 +79,15 @@ const loginUser = asyncHandeler (async (req, res, next) => {
 
   const option = {
     httpOnly: true,
-    secure: true
+    secure: true,
+    maxAge: 7*24*60*60*1000,
   }
 
   
 
   res.status(200)
-  .cookie("accessToken", accessToken, option)
-  .cookie("refreshToken", refreshToken, option)
+  .cookie("accessToken", accessToken, option )
+  .cookie("refreshToken", refreshToken, option )
   .json(new apiResponse(
     200,
     loggedUser,
@@ -139,13 +140,16 @@ const updateProfile = asyncHandeler ( async (req, res, next) => {
     throw new apiError(501, "unauthorized request")
   }
 
-  
+  let {name, email} = req.user
 
-  const {name, password} = req.body
+  const { name: nameFromFrontend, email: emailFromFrontend, password: passwordFromFrontend } = req.body;
   const filePath = req?.file?.path
 
+  name = nameFromFrontend ? nameFromFrontend : name
+  email = emailFromFrontend ? emailFromFrontend : email
 
-  const oldAvatarPath = user.avatar || null
+
+  const oldAvatarPath = user.avatar
   let url = ""
 
   if(filePath) {
@@ -153,24 +157,19 @@ const updateProfile = asyncHandeler ( async (req, res, next) => {
     if(url !== "") await deleteFromCloudinary(oldAvatarPath);
   }
 
-  if(!password) {
-    throw new apiError(400, "password required")
-  }
 
-  const updatedUser = await User.findOneAndUpdate(
-    user._id,
-    {
-      $set: {
-        name: name || user.name,
-        avatar: (url !== "") ? url : oldAvatarPath,
-        password: password,
-      }
-    },
-    {
-      validateBeforSave: true,
-      new: true,
-    }
-  ).select("-password -refreshToken")
+  const userToUpdate = await User.findById(user._id).select("-refreshTokn -password")
+  userToUpdate.name = name
+  userToUpdate.email = email
+  if(passwordFromFrontend) {
+    userToUpdate.password = passwordFromFrontend
+  }
+  if(url !== "") {
+    userToUpdate.avatar = url
+  }
+  await userToUpdate.save()
+
+  const updatedUser = await User.findById(userToUpdate._id).select("-refreshToken -password")
 
   if(!updatedUser) throw new apiError(500, "unable to update");
 
