@@ -1,7 +1,8 @@
+import jwt from 'jsonwebtoken'
+
 import { User } from "../models/user.model.js";
 import apiError from "../utils/apiError.js";
 import { asyncHandeler } from "../utils/asyncHandeler.js";
-import jwt from 'jsonwebtoken'
 
 export const varifyJwt = asyncHandeler( async (req, res, next) => {
     const accessToken = req.cookies?.accessToken  || req.header("Authorization")?.replace("Bearer ", "")
@@ -20,3 +21,12 @@ export const varifyJwt = asyncHandeler( async (req, res, next) => {
 
 })
 
+export const varifyAdmin = asyncHandeler( async (req, res, next) => {
+    const user = req?.user
+
+    if(user.admin != true) {
+        throw new apiError(500, "User is not admin")
+    }
+
+    next()
+})

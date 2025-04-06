@@ -135,6 +135,7 @@ const getProfile = asyncHandeler( async (req, res, next) => {
 
 const updateProfile = asyncHandeler ( async (req, res, next) => {
 
+
   const user = req.user
   if(!user) {
     throw new apiError(501, "unauthorized request")
@@ -143,19 +144,9 @@ const updateProfile = asyncHandeler ( async (req, res, next) => {
   let {name, email} = req.user
 
   const { name: nameFromFrontend, email: emailFromFrontend, password: passwordFromFrontend } = req.body;
-  const filePath = req?.file?.path
-
   name = nameFromFrontend ? nameFromFrontend : name
   email = emailFromFrontend ? emailFromFrontend : email
 
-
-  const oldAvatarPath = user.avatar
-  let url = ""
-
-  if(filePath) {
-    url = await uploadToCloudinary(filePath)
-    if(url !== "") await deleteFromCloudinary(oldAvatarPath);
-  }
 
 
   const userToUpdate = await User.findById(user._id).select("-refreshTokn -password")
@@ -163,9 +154,6 @@ const updateProfile = asyncHandeler ( async (req, res, next) => {
   userToUpdate.email = email
   if(passwordFromFrontend) {
     userToUpdate.password = passwordFromFrontend
-  }
-  if(url !== "") {
-    userToUpdate.avatar = url
   }
   await userToUpdate.save()
 
@@ -183,4 +171,23 @@ const updateProfile = asyncHandeler ( async (req, res, next) => {
 })
 
 
-export {registerUser, loginUser, logoutUser, getProfile, updateProfile};
+const deleteProfileAvatar = asyncHandeler(async (req, res, next) => {
+  const user = req.user
+
+  const userToUpdate = await User.findById(user._id).select("-refreshToken -password")
+  await deleteFromCloudinary(userToUpdate.avatar)
+  userToUpdate.avatar = null
+
+  await userToUpdate.save()
+  
+  const updatedUser = await User.findById(userToUpdate._id).select("-refreshToken -password")
+
+  if(!updatedUser) throw new apiError(500, "unable to update user");
+
+  res.status(200).json(
+    new apiResponse(200, updatedUser, "profile updated")
+  )
+})
+
+
+export {registerUser, loginUser, logoutUser, getProfile, updateProfile, deleteProfileAvatar};

@@ -1,7 +1,10 @@
 import express from 'express'
-import userRouter from './routes/user.routes.js'
 import cookieparser from 'cookie-parser'
 import cors from 'cors'
+
+
+import userRouter from './routes/user.routes.js'
+import postRouter from './routes/post.routes.js'
 
 const app = express()
 
@@ -24,6 +27,7 @@ app.use(cors({
 app.use(express.static("public"))
 
 app.use("/api/users", userRouter)
+app.use("/api/posts", postRouter)
 
 app.get("/", (req, res) => {
     res.send("api working")
