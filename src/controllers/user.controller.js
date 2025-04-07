@@ -121,8 +121,6 @@ const logoutUser = asyncHandeler( async (req, res, next) => {
 })
 
 
-
-
 const getProfile = asyncHandeler( async (req, res, next) => {
   const user = await User.findById(req?.user?._id).select("-password -refreshToken")
 
@@ -134,8 +132,6 @@ const getProfile = asyncHandeler( async (req, res, next) => {
 
 
 const updateProfile = asyncHandeler ( async (req, res, next) => {
-
-
   const user = req.user
   if(!user) {
     throw new apiError(501, "unauthorized request")

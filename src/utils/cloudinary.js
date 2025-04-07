@@ -1,4 +1,6 @@
 import {v2 as cloudinary} from 'cloudinary'
+import dotenv from 'dotenv'
+dotenv.config()
 
 import fs from 'fs'
 import apiError from './apiError.js'
@@ -6,9 +8,9 @@ import { log } from 'console'
 
 
 cloudinary.config({
-    cloud_name: "dmdaie93q",
-    api_key: "376378726641127",
-    api_secret: "K-xJ_X92T5gtgvPx6rDdgE1pcg8"
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET
 })
 
 
@@ -17,27 +19,23 @@ const uploadToCloudinary = async (localPath) => {
 
     try {
         if (!localPath) return null;
-
         const response = await cloudinary.uploader.upload(localPath, {
             resource_type: 'image',
             folder: 'BlogSphere'
         })
-
         fs.unlinkSync(localPath)
         return response.url
         
     } catch (error) {
         fs.unlinkSync(localPath)
-        new apiError(400, error.message)
-        
-        return null
+        throw new apiError(400, error.message)
     }
 }
 
 
 const deleteFromCloudinary = async (url)=>{
     try {
-        if (url == "") return null
+        if (url == "" || url == null) return null
 
         const extractPublicId = (url) => {
             // Remove the Cloudinary domain and transformation parts

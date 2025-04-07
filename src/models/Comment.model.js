@@ -21,7 +21,7 @@ const CommentSchema = mongoose.Schema(
 );
 
 CommentSchema.virtual("replies", {
-  ref: "Comment",
+  ref: "comment",
   localField: "_id",
   foreignField: "parent",
 });
