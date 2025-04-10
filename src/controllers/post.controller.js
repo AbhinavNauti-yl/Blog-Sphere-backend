@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import apiError from "../utils/apiError.js";
 import apiResponse from "../utils/apiResponse.js";
 import { deleteFromCloudinary, uploadToCloudinary } from "../utils/cloudinary.js";
+import path from "path";
 
 const createPost = asyncHandeler(async (req, res, next) => {
     const post = new Post({
@@ -29,12 +30,12 @@ const updatePost = asyncHandeler(async (req, res, next) => {
     const post = await Post.findOne({ slug: req.params?.slug });
     if (!post) throw new apiError(500, "post dose not exist");
     
-    const postPhotoLocalPath = req?.file?.path || null;
-    let oldPhoto = post.photo
-    let url = null;
+    const postPhotoLocalPath = req?.file?.path;
+    let oldPhoto = post.photo || null
+    let url = "";
     if (postPhotoLocalPath) {
         url = await uploadToCloudinary(postPhotoLocalPath);
-        if(url) {
+        if(url != ""  && oldPhoto) {
             await deleteFromCloudinary(oldPhoto)
         }
     }
@@ -46,8 +47,9 @@ const updatePost = asyncHandeler(async (req, res, next) => {
     post.body = body || post.body;
     post.tags = tags || post.tags;
     post.categories = categories || post.categories;
-    post.photo = url || post.photo
+    post.photo = url
     await post.save();
+
     const updatedPost = await Post.findById(post._id)
 
     if(!updatedPost) throw new apiError(500, "post could not be updated");
@@ -56,7 +58,6 @@ const updatePost = asyncHandeler(async (req, res, next) => {
 });
 
 const deletePost = asyncHandeler( async (req, res, next) => {
-    console.log("check");
     const post = await Post.findOneAndDelete({slug: req.params?.slug})
     
     if(!post) throw new apiError(400, "post dose not exist");
@@ -89,5 +90,18 @@ const getPost = asyncHandeler( async (req, res, next) => {
 
 })
 
+const getAllPost = asyncHandeler( async (req, res, next) => {
+    const posts  = await Post.find({}).populate([
+        {
+            path: "user",
+            select: ["avatar", "name", "varified"],
+        }
+    ])
 
-export { createPost, updatePost, deletePost, getPost };
+    if(!posts) throw new apiError(500, "could not fetch Posts");
+
+    res.status(200).json(new apiResponse(200, posts, "all posts"))
+})
+
+
+export { createPost, updatePost, deletePost, getPost, getAllPost };
