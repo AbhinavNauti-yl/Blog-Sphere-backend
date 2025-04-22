@@ -131,7 +131,7 @@ const getAllPost = asyncHandeler(async (req, res, next) => {
       "x-pageSize": JSON.stringify(pageSize),
       "x-totalPagesCount": JSON.stringify(pages),
     })
-    .json(new apiResponse(200, posts, "all posts"))
+    .json(new apiResponse(200, posts.length != 0 ? posts : [], "all posts"))
 });
 
 export { createPost, updatePost, deletePost, getPost, getAllPost };
