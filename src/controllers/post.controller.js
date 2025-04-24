@@ -107,9 +107,9 @@ const getAllPost = asyncHandeler(async (req, res, next) => {
   const total = await Post.find(where).countDocuments();
   const pages = Math.ceil(total / pageSize);
 
-  if (page > pages) {
-    throw new apiError(500, "no pages found");
-  }
+  // if (page > pages) {
+  //   throw new apiError(500, "no pages found");
+  // }
   
   const posts = await query
     .skip(skip)
