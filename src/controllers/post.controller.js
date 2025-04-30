@@ -35,11 +35,13 @@ const updatePost = asyncHandeler(async (req, res, next) => {
   const postPhotoLocalPath = req?.file?.path;
   let oldPhoto = post.photo || null;
   let url = "";
-  if (postPhotoLocalPath) {
+  if (postPhotoLocalPath !== undefined) {
     url = await uploadToCloudinary(postPhotoLocalPath);
     if (url != "" && oldPhoto) {
       await deleteFromCloudinary(oldPhoto);
     }
+  } else {
+    url = null
   }
 
   const { title, caption, slug, body, tags, categories } = JSON.parse(
@@ -51,7 +53,7 @@ const updatePost = asyncHandeler(async (req, res, next) => {
   post.body = body || post.body;
   post.tags = tags || post.tags;
   post.categories = categories || post.categories;
-  post.photo = url;
+  post.photo = url == null ? oldPhoto : url;
   await post.save();
 
   const updatedPost = await Post.findById(post._id);
