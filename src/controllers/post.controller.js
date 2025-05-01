@@ -8,6 +8,7 @@ import {
   deleteFromCloudinary,
   uploadToCloudinary,
 } from "../utils/cloudinary.js";
+import path from "path";
 
 const createPost = asyncHandeler(async (req, res, next) => {
   const post = new Post({
@@ -81,6 +82,10 @@ const getPost = asyncHandeler(async (req, res, next) => {
     {
       path: "user",
       select: ["avatar", "name"],
+    },
+    {
+      path: "categories",
+      select: ["title"],
     },
     {
       path: "comments",
