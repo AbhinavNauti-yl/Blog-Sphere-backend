@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {registerUser, loginUser, logoutUser, getProfile, updateProfile, deleteProfileAvatar} from "../controllers/user.controller.js";
+import {registerUser, loginUser, logoutUser, getProfile, updateProfile, deleteProfileAvatar, updateProfileAvatar} from "../controllers/user.controller.js";
 import { varifyJwt } from "../middleware/auth.middleware.js";
 import {upload} from '../middleware/multer.middleware.js'
 
@@ -12,6 +12,11 @@ userRouter.route("/profile").get(varifyJwt, getProfile)
 userRouter.route("/updateProfile").post(
     varifyJwt,
     updateProfile,
+)
+userRouter.route("/updateProfileAvatar").post(
+    varifyJwt,
+    upload.single("avatar"),
+    updateProfileAvatar,
 )
 userRouter.route("/deleteProfileAvatar").get(
     varifyJwt,

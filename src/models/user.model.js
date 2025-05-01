@@ -20,6 +20,10 @@ const UserSchema = Schema({
         type: String,
         required: true,
     },
+    varified: {
+        type: Boolean,
+        default: false
+    },
     admin: {
         type: Boolean,
         default: false

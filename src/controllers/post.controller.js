@@ -126,6 +126,10 @@ const getAllPost = asyncHandeler(async (req, res, next) => {
         path: "user",
         select: ["avatar", "name", "varified"],
       },
+      {
+        path: "categories",
+        select: ["title"],
+      },
     ])
     .sort({ updatedAt: "desc" });
 
