@@ -216,6 +216,37 @@ const updateProfileAvatar = asyncHandeler(async (req, res, next) => {
   res.status(200).json(new apiResponse(200, updatedUser, "profile updated"));
 });
 
+const getAllUsers = asyncHandeler(async (req, res, next) => {
+  const filter = req.query?.search;
+  let where = {};
+  if (filter) {
+    where.email = { $regex: filter, $options: "i" };
+  }
+
+  const query = User.find(where);
+  const page = parseInt(req.query?.page) || 1;
+  const pageSize = parseInt(req.query?.pageSize) || 10;
+  const skip = (page - 1) * pageSize;
+  const total = await User.find(where).countDocuments();
+  const pages = Math.ceil(total / pageSize);
+
+  const users = await query
+    .skip(skip)
+    .limit(pageSize)
+    .sort({ updatedAt: "desc" });
+
+  res
+    .status(200)
+    .header({
+      "x-filetr": filter,
+      "x-totalCount": JSON.stringify(total),
+      "x-currentPage": JSON.stringify(page),
+      "x-pageSize": JSON.stringify(pageSize),
+      "x-totalPagesCount": JSON.stringify(pages),
+    })
+    .json(new apiResponse(200, users, "all users"));
+});
+
 export {
   registerUser,
   loginUser,
@@ -224,4 +255,5 @@ export {
   updateProfile,
   deleteProfileAvatar,
   updateProfileAvatar,
+  getAllUsers,
 };
