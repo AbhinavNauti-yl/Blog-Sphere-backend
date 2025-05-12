@@ -9,6 +9,7 @@ import {
   updateProfileAvatar,
   getAllUsers,
   deleteUser,
+  setVarifiedUser,
 } from "../controllers/user.controller.js";
 import { varifyAdmin, varifyJwt } from "../middleware/auth.middleware.js";
 import { upload } from "../middleware/multer.middleware.js";
@@ -25,6 +26,7 @@ userRouter
   .route("/updateProfileAvatar")
   .post(varifyJwt, upload.single("avatar"), updateProfileAvatar);
 userRouter.route("/deleteProfileAvatar").get(varifyJwt, deleteProfileAvatar);
+userRouter.route("/setVarifiedUser").put(varifyJwt, setVarifiedUser);
 
 //routed of admin to handel user
 userRouter.route("/getAllUsers").get(varifyJwt, varifyAdmin, getAllUsers);

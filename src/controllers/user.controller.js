@@ -254,6 +254,15 @@ const deleteUser = asyncHandeler(async (req, res, next) => {
   res.status(200).json(new apiResponse(200, response, "user deleted"));
 });
 
+const setVarifiedUser = asyncHandeler(async (req, res, next) => {
+  const user = await User.findById(req?.user?._id);
+  if (!user) throw new apiError(500, "could not find user");
+  user.varified = true
+  await user.save()
+  const updatedUser = await User.findById(user._id)
+  res.status(200).json(new apiResponse(200, updatedUser, "user deleted"));
+});
+
 export {
   registerUser,
   loginUser,
@@ -263,5 +272,6 @@ export {
   deleteProfileAvatar,
   updateProfileAvatar,
   getAllUsers,
-  deleteUser
+  deleteUser,
+  setVarifiedUser
 };
