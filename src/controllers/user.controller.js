@@ -247,6 +247,13 @@ const getAllUsers = asyncHandeler(async (req, res, next) => {
     .json(new apiResponse(200, users, "all users"));
 });
 
+const deleteUser = asyncHandeler(async (req, res, next) => {
+  const id = req.params?.id;
+  const response = await User.deleteOne({ _id: id });
+  if (!response) throw new apiError(500, "could not delete user");
+  res.status(200).json(new apiResponse(200, response, "user deleted"));
+});
+
 export {
   registerUser,
   loginUser,
@@ -256,4 +263,5 @@ export {
   deleteProfileAvatar,
   updateProfileAvatar,
   getAllUsers,
+  deleteUser
 };
