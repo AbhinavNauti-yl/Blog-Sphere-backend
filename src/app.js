@@ -23,7 +23,7 @@ app.use(
     credentials: true,
     // methods: ["GET", "POST", "PUT", "DELETE"],
     // allowedHeaders: ["Content-Type", "Authorization"],
-    exposedHeaders: '*',
+    exposedHeaders: ["x-totalPagesCount", "x-totalCount", "x-currentPage", "x-pageSize", "x-filter"],
   })
 );
 

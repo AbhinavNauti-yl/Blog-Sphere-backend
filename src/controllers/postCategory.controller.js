@@ -80,7 +80,7 @@ const getAllPostCategory = asyncHandeler(async (req, res, next) => {
 
   res
     .status(200)
-    .header({
+    .set({
       "x-filetr": filter,
       "x-totalCount": JSON.stringify(total),
       "x-currentPage": JSON.stringify(page),
