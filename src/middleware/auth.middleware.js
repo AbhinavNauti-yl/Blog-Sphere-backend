@@ -5,7 +5,7 @@ import apiError from "../utils/apiError.js";
 import { asyncHandeler } from "../utils/asyncHandeler.js";
 
 export const varifyJwt = asyncHandeler( async (req, res, next) => {
-    const accessToken = req.cookies?.accessToken  || req.header("Authorization")?.replace("Bearer ", "")
+    const accessToken = req?.cookies?.accessToken  || req.header("Authorization")?.replace("Bearer ", "")
 
     if(!accessToken) {
         throw new apiError(401, "unauthorized access")
