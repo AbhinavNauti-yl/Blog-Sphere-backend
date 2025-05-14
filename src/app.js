@@ -22,7 +22,7 @@ app.use(express.urlencoded(
 app.use(cookieparser())
 
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
+    origin: ['https://blogsphere-glkm.onrender.com'],
     credentials: true,
     exposedHeaders: "*"
 }))
