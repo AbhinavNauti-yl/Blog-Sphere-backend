@@ -22,8 +22,9 @@ app.use(express.urlencoded(
 app.use(cookieparser())
 
 app.use(cors({
-    origin: "*",
-    credentials: true
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+    exposedHeaders: "*"
 }))
 
 app.use(express.static("public"))
