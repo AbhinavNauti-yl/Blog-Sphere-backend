@@ -19,14 +19,14 @@ app.use(express.urlencoded(
 ))
 
 
-app.use(cookieparser())
 
 app.use(cors({
-    origin: ['https://blog-sphere-8hfe.onrender.com'],
+    origin: 'https://blog-sphere-t65e.onrender.com',
     credentials: true,
-    exposedHeaders: "https://blog-sphere-8hfe.onrender.com"
+    exposedHeaders: "https://blog-sphere-t65e.onrender.com"
 }))
 
+app.use(cookieparser())
 app.use(express.static("public"))
 
 app.use("/api/users", userRouter)
