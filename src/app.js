@@ -24,7 +24,7 @@ app.use(cookieparser())
 app.use(cors({
     origin: ['https://blog-sphere-8hfe.onrender.com'],
     credentials: true,
-    exposedHeaders: "*"
+    exposedHeaders: "https://blog-sphere-8hfe.onrender.com"
 }))
 
 app.use(express.static("public"))
