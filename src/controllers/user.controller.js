@@ -261,7 +261,7 @@ const setVarifiedUser = asyncHandeler(async (req, res, next) => {
   if (!user) throw new apiError(500, "could not find user");
   user.varified = true
   await user.save()
-  const updatedUser = await User.findById(user._id)
+  const updatedUser = await User.findById(user._id).select("-refreshToken -password")
   res.status(200).json(new apiResponse(200, updatedUser, "user deleted"));
 });
 
